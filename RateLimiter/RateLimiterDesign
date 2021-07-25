@@ -1,0 +1,35 @@
+a. Rate limiting should work for a distributed set up as the APIs are available through a group of API Gateways
+
+As per the diagram there are more than one rate limiters spread across various geographical regions. Being a distributed system, the various rate limiters capture all requests.
+
+b. What database would be used and the rationale behind the choice
+
+The best database is redis. I would use redis as a database rather than any other database, cause of its fast retrieval. I would prefer a centralized database to get updates from all the rate limiters and store in one location.
+Horizontal scaling of redis servers are easy, in case situation demands distributed redis cluster.
+As the persistant time for the request is limited to one minute and then requests older than one minute of time, can be erased off, so I would prefer Redis as it is fast and used as a cache memory than a long term persistant media.
+
+
+c. How would throttling be done?
+
+I would use sliding window architechture. As our target is 5 requests per minute, we would check the present time and the previous request time and count. 
+
+If the new count <=5 and time is within one minute, request is allowed
+If the new count >5 and time is within one minute, request is dropped
+If the new count is >5 and time is above one minute, remove the old requests / or change the count to zero and allow the request
+
+The pattern for storing the request is 
+
+ < Customer IP, { url: www.zzz.com/accounts, count : 2, lastVisit: 11:01:23}>
+
+ This solution is a good as:
+ 1. Saves memory
+ 2. Does not crowd too many request within time span
+ 3. Users need not wait for some long window( but they will need to wait)
+ 
+ d. The system should be highly available
+
+ To make this system highly available, we would be using number of risk limiter services in case of any problem in one /two of them. The load balancer should be able to handle and distribute the load among the available nodes. The centralized redis server, can have a clone, which is periodically updated, and it takes over, in case the main redis server goes down.
+
+
+
+

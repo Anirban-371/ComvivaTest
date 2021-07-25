@@ -1,0 +1,21 @@
+Designing a garbage collection system
+
+Whole idea to develop the garbage collection system is on relationship based on references.
+Simple idea:
+If object is being referenced by one object and that object to another which in a chained manner connects to the main object then the object cannot be garbage collected. This means the object has to be a part of the connected graph
+If the object is part of the disconnected graph, which means the current object cannot be linked to the main object, then it should be garbage collected.
+
+So the second step is to break the objects  / divide the objects based on their time they have lived.
+
+It is based on the hypothesis that, if an object has stayed for long then it is a part of the connected graph and it will remain to be so for long time. However it is opposite for the newly created objects.
+
+So bigger percentage of the scan for garbage collecting objects is done on the EDEN > survivor 1 > survivor 2 > old generation (least scan)
+
+The data stucture chosen is a Stack  which is used to traverse the network of objects designed in form of a graph.
+
+To produce minimum impact on the running applications of the system, while running the garbage collection, the process used is Concurrency, which means that the job of garbage collection is divided into smaller tasks and then fed into the processor, which processes these tasks for a quantum of time in round robin fashion along with other applications. In this way the effect can be minimised.
+
+
+
+
+
